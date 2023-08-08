@@ -271,6 +271,9 @@ public class RouterProcessor extends AbstractProcessor {
                     }
                     routeInfo = new RouteInfo(router, element, RouteType.ACTIVITY, paramsType);
                 } else if (types.isSubtype(tm, iProvider)) {         // IProvider
+                    if(tm.toString().endsWith("AutoWiredServiceImpl")) {
+                        moduleName = "xrouterruntime";
+                    }
                     logger.info(">>> Found provider router: " + tm.toString() + " <<<");
                     routeInfo = new RouteInfo(router, element, RouteType.PROVIDER, null);
                 } else if (types.isSubtype(tm, type_Service)) {           // Service

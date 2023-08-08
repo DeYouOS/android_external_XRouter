@@ -44,6 +44,11 @@ android_library {
         "gson-prebuilt-jar",
         "XRouter_Annotation",
     ],
+    plugins: [
+        "XRouter_Interceptor_Processor",
+        "XRouter_AutoWired_Processor",
+        "XRouter_Router_Processor",
+    ],
 }
 
 java_library {
