@@ -24,15 +24,13 @@ import com.xuexiang.xrouter.enums.TypeKind;
 
 import java.util.Map;
 
-import javax.lang.model.element.Element;
-
 /**
  * 路由信息
  *
  * @author xuexiang
  * @since 2018/5/17 上午12:32
  */
-public class RouteInfo {
+public class RouteInfo<T> {
     /**
      * 路由的类型
      */
@@ -40,7 +38,7 @@ public class RouteInfo {
     /**
      *
      */
-    private Element rawType;        // Raw type of route
+    private T rawType;        // Raw type of route
     /**
      * 路由目标类
      */
@@ -118,7 +116,7 @@ public class RouteInfo {
      * @param type       路由的类型
      * @param paramsType 被{@link AutoWired}标注字段的信息（key为字段名，value为字段的类型{@link TypeKind}
      */
-    public RouteInfo(Router router, Element rawType, RouteType type, Map<String, Integer> paramsType) {
+    public RouteInfo(Router router, T rawType, RouteType type, Map<String, Integer> paramsType) {
         this(type, rawType, null, router.path(), router.group(), paramsType, router.priority(), router.extras());
     }
 
@@ -134,7 +132,7 @@ public class RouteInfo {
      * @param priority    优先级
      * @param extra       路由的附加属性
      */
-    public RouteInfo(RouteType type, Element rawType, Class<?> destination, String path, String group, Map<String, Integer> paramsType, int priority, int extra) {
+    public RouteInfo(RouteType type, T rawType, Class<?> destination, String path, String group, Map<String, Integer> paramsType, int priority, int extra) {
         this.type = type;
         this.destination = destination;
         this.rawType = rawType;
@@ -154,11 +152,11 @@ public class RouteInfo {
         return this;
     }
 
-    public Element getRawType() {
+    public T getRawType() {
         return rawType;
     }
 
-    public RouteInfo setRawType(Element rawType) {
+    public RouteInfo setRawType(T rawType) {
         this.rawType = rawType;
         return this;
     }

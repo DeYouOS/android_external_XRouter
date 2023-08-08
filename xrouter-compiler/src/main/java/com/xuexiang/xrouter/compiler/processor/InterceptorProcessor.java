@@ -137,13 +137,17 @@ public class InterceptorProcessor extends AbstractProcessor {
 
             logger.info("The user has configuration the module name, it was [" + moduleName + "]");
         } else {
-            logger.error("These no module name, at 'build.gradle', like :\n" +
+            /*
+            logger.info("These no module name, at 'build.gradle', like :\n" +
                     "apt {\n" +
                     "    arguments {\n" +
                     "        moduleName project.getName();\n" +
                     "    }\n" +
                     "}\n");
-            throw new RuntimeException(PREFIX_OF_LOGGER + ">>> No module name, for more information, look at gradle log.");
+            */
+            //默认是app
+            moduleName = "app";
+            // throw new RuntimeException(PREFIX_OF_LOGGER + ">>> No module name, for more information, look at gradle log.");
         }
     }
 

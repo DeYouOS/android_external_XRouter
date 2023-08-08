@@ -80,7 +80,7 @@ public class RouterProcessor extends AbstractProcessor {
     /**
      * 组路由表【GroupName and RouteInfos】
      */
-    private Map<String, Set<RouteInfo>> groupMap = new HashMap<>();
+    private Map<String, Set<RouteInfo<Element>>> groupMap = new HashMap<>();
     /**
      * 根路由表【GroupName and GroupFileName】，用于自动生成路由组注册信息
      */
@@ -152,13 +152,17 @@ public class RouterProcessor extends AbstractProcessor {
 
             logger.info("The user has configuration the module name, it was [" + moduleName + "]");
         } else {
-            logger.error("These no module name, at 'build.gradle', like :\n" +
+            /*
+            logger.info("These no module name, at 'build.gradle', like :\n" +
                     "apt {\n" +
                     "    arguments {\n" +
                     "        moduleName project.getName();\n" +
                     "    }\n" +
                     "}\n");
-            throw new RuntimeException(PREFIX_OF_LOGGER + ">>> No module name, for more information, look at gradle log.");
+            */
+            //默认是app
+            moduleName = "app";
+            // throw new RuntimeException(PREFIX_OF_LOGGER + ">>> No module name, for more information, look at gradle log.");
         }
     }
 
@@ -251,7 +255,7 @@ public class RouterProcessor extends AbstractProcessor {
             for (Element element : routeElements) {
                 TypeMirror tm = element.asType();
                 Router router = element.getAnnotation(Router.class);
-                RouteInfo routeInfo = null;
+                RouteInfo<Element> routeInfo = null;
 
                 if (types.isSubtype(tm, type_Activity)) {                 // Activity
                     logger.info(">>> Found activity router: " + tm.toString() + " <<<");
@@ -296,7 +300,7 @@ public class RouterProcessor extends AbstractProcessor {
                     .addParameter(providerParamSpec);
 
             // 开始自动生成路由信息注册代码
-            for (Map.Entry<String, Set<RouteInfo>> entry : groupMap.entrySet()) {
+            for (Map.Entry<String, Set<RouteInfo<Element>>> entry : groupMap.entrySet()) {
                 String groupName = entry.getKey();
 
                 /*
@@ -310,8 +314,8 @@ public class RouterProcessor extends AbstractProcessor {
                         .addParameter(groupParamSpec);
 
                 // 填充构建XRouter$$Providers$$信息，生成对应代码
-                Set<RouteInfo> groupData = entry.getValue();
-                for (RouteInfo routeInfo : groupData) {
+                Set<RouteInfo<Element>> groupData = entry.getValue();
+                for (RouteInfo<Element> routeInfo : groupData) {
                     switch (routeInfo.getType()) {
                         case PROVIDER:  // Need cache provider's super class
                             List<? extends TypeMirror> interfaces = ((TypeElement) routeInfo.getRawType()).getInterfaces();
@@ -420,12 +424,12 @@ public class RouterProcessor extends AbstractProcessor {
      *
      * @param routeInfo 路由信息.
      */
-    private void categories(RouteInfo routeInfo) {
+    private void categories(RouteInfo<Element> routeInfo) {
         if (routeVerify(routeInfo)) {
             logger.info(">>> Start categories, group = " + routeInfo.getGroup() + ", path = " + routeInfo.getPath() + " <<<");
-            Set<RouteInfo> routeInfos = groupMap.get(routeInfo.getGroup());
+            Set<RouteInfo<Element>> routeInfos = groupMap.get(routeInfo.getGroup());
             if (CollectionUtils.isEmpty(routeInfos)) { //路由组的第一个路由，初始化路由集合
-                Set<RouteInfo> routeInfoSet = new TreeSet<>(new Comparator<RouteInfo>() {
+                Set<RouteInfo<Element>> routeInfoSet = new TreeSet<>(new Comparator<RouteInfo<Element>>() {
                     @Override
                     public int compare(RouteInfo r1, RouteInfo r2) {
                         try {
@@ -451,7 +455,7 @@ public class RouterProcessor extends AbstractProcessor {
      *
      * @param info 路由信息
      */
-    private boolean routeVerify(RouteInfo info) {
+    private boolean routeVerify(RouteInfo<Element> info) {
         String path = info.getPath();
 
         if (StringUtils.isEmpty(path) || !path.startsWith("/")) {   // The path must be start with '/' and not empty!
